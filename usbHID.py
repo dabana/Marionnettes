@@ -25,9 +25,9 @@ SrtSltstr0 = '00'
 def send_command(var, string):
     global lr0, ud0, YBAXstr0, RLstr0, SrtSltstr0
     ser.write(string.encode())
-    #while ser.out_waiting > 0:
-    #   pass
-    sleep(0.1)
+
+    while ser.out_waiting > 0:
+        pass
     lr0 = var
 
 def sample_handler(data):
@@ -99,8 +99,7 @@ pID = 0x0011
 device = show_specific_device(vID, pID)
 
 with serial.Serial('COM3', 9600) as ser:
-    ser.write('dcl'.encode())
-    time.sleep(0.1)
-    ser.write('ddl'.encode())
+    send_command(lr0, 'ddl')
+    send_command(lr0, 'dcl')
     get_data(device)
 
