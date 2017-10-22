@@ -25,9 +25,7 @@ SrtSltstr0 = '00'
 def send_command(var, string):
     global lr0, ud0, YBAXstr0, RLstr0, SrtSltstr0
     ser.write(string.encode())
-
-    while ser.out_waiting > 0:
-        pass
+    sleep(0.1)
     lr0 = var
 
 def sample_handler(data):
@@ -85,12 +83,13 @@ def parse_data(data):
     #print('Up/down: ' + lr + ', Left/Right: ' + ud + ', YBAX string: ' + YBAXstr + ', RL string: ' + RLstr + ', SrtSlt string:' + SrtSltstr)
     return lr, ud, YBAXstr, RLstr, SrtSltstr
 
+
 def get_data(device):
     device.open()
     device.set_raw_data_handler(sample_handler)
     while device.is_plugged():
         pass# just keep the device opened to receive events
-        #sleep(0.5)
+        sleep(0.5)
     return
 
 list_devices()
@@ -99,6 +98,8 @@ pID = 0x0011
 device = show_specific_device(vID, pID)
 
 with serial.Serial('COM3', 9600) as ser:
+    ser.flushInput()
+    ser.flushOutput()
     send_command(lr0, 'ddl')
     send_command(lr0, 'dcl')
     get_data(device)
