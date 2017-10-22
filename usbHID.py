@@ -22,11 +22,12 @@ YBAXstr0 = '0000'
 RLstr0 = '00'
 SrtSltstr0 = '00'
 
-def send_command(var, string):
-    global lr0, ud0, YBAXstr0, RLstr0, SrtSltstr0
+def send_command(var, var0, string):
+    #global lr0, ud0, YBAXstr0, RLstr0, SrtSltstr0
     ser.write(string.encode())
     sleep(0.1)
-    lr0 = var
+    var0 = var
+    return var0
 
 def sample_handler(data):
     global lr0, ud0, YBAXstr0, RLstr0, SrtSltstr0
@@ -38,14 +39,14 @@ def sample_handler(data):
     #print('test: ' + lr)
 
     if lr == '1' and lr != lr0:
-        send_command(lr, 'ddh')
+        lr0 = send_command(lr, lr0, 'ddh')
         print('going right')
     elif lr == '-1' and lr != lr0:
-        send_command(lr, 'dch')
+        lr0 = send_command(lr, lr0, 'dch')
         print('going left')
     elif lr == '0' and lr != lr0:
-        send_command(lr, 'dcl')
-        send_command(lr, 'ddl')
+        lr0 = send_command(lr, lr0, 'dcl')
+        lr0 = send_command(lr, lr0, 'ddl')
 
 def parse_data(data):
 
@@ -100,7 +101,5 @@ device = show_specific_device(vID, pID)
 with serial.Serial('COM3', 9600) as ser:
     ser.flushInput()
     ser.flushOutput()
-    send_command(lr0, 'ddl')
-    send_command(lr0, 'dcl')
     get_data(device)
 
