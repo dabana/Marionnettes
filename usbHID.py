@@ -17,17 +17,40 @@ def show_specific_device(target_vendor_id, target_product_id):
     return device
 
 lr0 = '0'
-ud = '0'
+ud0 = '0'
 YBAXstr0 = '0000'
 RLstr0 = '00'
 SrtSltstr0 = '00'
 
-def send_command(var, var0, string):
-    #global lr0, ud0, YBAXstr0, RLstr0, SrtSltstr0
+high_serial_str = ['ddh', 'dch', 'dbh', 'd9h']
+low_serial_str = ['ddl', 'dcl', 'dbl', 'd9l']
+
+sleeptime = 0.05
+
+
+def send_direction(var, var0, string):
     ser.write(string.encode())
-    sleep(0.1)
+    sleep(sleeptime)
     var0 = var
     return var0
+
+
+def send_buttons(var, var0):
+    global high_serial_str, low_serial_str
+
+    if var != var0:
+        print('a button was pressed or released')
+        for i in range(0, 4):
+            if var[i] == '1':
+                ser.write(high_serial_str[i].encode())
+                sleep(sleeptime)
+
+            elif var[i] == '0':
+                ser.write(low_serial_str[i].encode())
+                sleep(sleeptime)
+        var0 = var
+    return var0
+
 
 def sample_handler(data):
     global lr0, ud0, YBAXstr0, RLstr0, SrtSltstr0
@@ -36,17 +59,30 @@ def sample_handler(data):
     #deltat = (time.time() - t0)
     #print('Up/down: ' + lr + ', Left/Right: ' + ud + ', YBAX string: ' + YBAXstr + ', RL string: ' + RLstr + ', SrtSlt string:' + SrtSltstr)
     #print('Took %.15f seconds' % deltat)
-    #print('test: ' + lr)
 
+    #Handle directions
     if lr == '1' and lr != lr0:
-        lr0 = send_command(lr, lr0, 'ddh')
+        lr0 = send_direction(lr, lr0, 'ddh')
         print('going right')
     elif lr == '-1' and lr != lr0:
-        lr0 = send_command(lr, lr0, 'dch')
+        lr0 = send_direction(lr, lr0, 'dch')
         print('going left')
     elif lr == '0' and lr != lr0:
-        lr0 = send_command(lr, lr0, 'dcl')
-        lr0 = send_command(lr, lr0, 'ddl')
+        lr0 = send_direction(lr, lr0, 'dcl')
+        lr0 = send_direction(lr, lr0, 'ddl')
+    if ud == '1' and ud != ud0:
+        ud0 = send_direction(ud, ud0, 'dbh')
+        print('going up')
+    elif ud == '-1' and ud != ud0:
+        ud0 = send_direction(ud, ud0, 'd9h')
+        print('going down')
+    elif ud == '0' and ud != ud0:
+        ud0 = send_direction(ud, ud0, 'dbl')
+        ud0 = send_direction(ud, ud0, 'd9l')
+
+    #Handle Y,A,B,X buttons
+    YBAXstr0 = send_buttons(YBAXstr, YBAXstr0)
+
 
 def parse_data(data):
 
@@ -90,7 +126,7 @@ def get_data(device):
     device.set_raw_data_handler(sample_handler)
     while device.is_plugged():
         pass# just keep the device opened to receive events
-        sleep(0.5)
+        #sleep(sleeptime)
     return
 
 list_devices()
