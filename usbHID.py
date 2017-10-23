@@ -64,23 +64,23 @@ def sample_handler(data):
 
     #Handle directions
     if lr == '1' and lr != lr0:
-        lr0 = send_direction(lr, lr0, 'ddh')
+        lr0 = send_direction(lr, lr0, '1ddh')
         print('going right')
     elif lr == '-1' and lr != lr0:
-        lr0 = send_direction(lr, lr0, 'dch')
+        lr0 = send_direction(lr, lr0, '1dch')
         print('going left')
     elif lr == '0' and lr != lr0:
-        lr0 = send_direction(lr, lr0, 'dcl')
-        lr0 = send_direction(lr, lr0, 'ddl')
+        lr0 = send_direction(lr, lr0, '1dcl')
+        lr0 = send_direction(lr, lr0, '1ddl')
     if ud == '1' and ud != ud0:
-        ud0 = send_direction(ud, ud0, 'dbh')
+        ud0 = send_direction(ud, ud0, '1dbh')
         print('going up')
     elif ud == '-1' and ud != ud0:
-        ud0 = send_direction(ud, ud0, 'd9h')
+        ud0 = send_direction(ud, ud0, '1d9h')
         print('going down')
     elif ud == '0' and ud != ud0:
-        ud0 = send_direction(ud, ud0, 'dbl')
-        ud0 = send_direction(ud, ud0, 'd9l')
+        ud0 = send_direction(ud, ud0, '1dbl')
+        ud0 = send_direction(ud, ud0, '1d9l')
 
     #Handle Y,A,B,X buttons
     if YBAXstr != YBAXstr0:
