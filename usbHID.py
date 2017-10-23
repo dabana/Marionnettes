@@ -26,6 +26,8 @@ high_serial_str = ['ddh', 'dch', 'dbh', 'd9h']
 low_serial_str = ['ddl', 'dcl', 'dbl', 'd9l']
 
 sleeptime = 0.05
+stringin = ''
+stringout = ''
 
 
 def send_direction(var, var0, string):
@@ -35,30 +37,25 @@ def send_direction(var, var0, string):
     return var0
 
 
-def send_buttons(var, var0):
+def send_buttons(var, var0, string):
     global high_serial_str, low_serial_str
-    string = ''
-    if var != var0:
-        print('a button was pressed or released')
-        i = 0
-        for x, y in zip(var, var0):
-            if x != y:
-                if x == '1':
-                    string += high_serial_str[i]
-                elif x == '0':
-                    string += low_serial_str[i]
-            i += 1
-        var0 = var
 
-    if len(string) > 0:
-        string = str(len(string)) + string
-        ser.write(string.encode())
-        sleep(sleeptime)
-    return var0
+    print('a button was pressed or released')
+    i = 0
+    for x, y in zip(var, var0):
+        if x != y:
+            if x == '1':
+                string += high_serial_str[i]
+            elif x == '0':
+                string += low_serial_str[i]
+        i += 1
+    var0 = var
+
+    return string, var0
 
 
 def sample_handler(data):
-    global lr0, ud0, YBAXstr0, RLstr0, SrtSltstr0
+    global lr0, ud0, YBAXstr0, RLstr0, SrtSltstr0, stringin, stringout
     # t0 = time.time()
     lr, ud, YBAXstr, RLstr, SrtSltstr = parse_data(data)
     #deltat = (time.time() - t0)
@@ -86,8 +83,16 @@ def sample_handler(data):
         ud0 = send_direction(ud, ud0, 'd9l')
 
     #Handle Y,A,B,X buttons
-    YBAXstr0 = send_buttons(YBAXstr, YBAXstr0)
+    if YBAXstr != YBAXstr0:
+        stringout, YBAXstr0 = send_buttons(YBAXstr, YBAXstr0, stringin)
+        stringin = stringout
 
+    if len(stringout) > 0 and YBAXstr == YBAXstr0:
+        string2send = str(len(stringout)) + stringout
+        ser.write(string2send.encode())
+        sleep(sleeptime)
+        stringin = ''
+        stringout = ''
 
 def parse_data(data):
 
@@ -140,7 +145,5 @@ pID = 0x0011
 device = show_specific_device(vID, pID)
 
 with serial.Serial('COM3', 9600) as ser:
-    ser.flushInput()
-    ser.flushOutput()
     get_data(device)
 
