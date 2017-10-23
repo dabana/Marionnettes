@@ -41,16 +41,16 @@ def send_buttons(var, var0):
     if var != var0:
         print('a button was pressed or released')
         i = 0
+        string = '4'
         for x, y in zip(var, var0):
             if x != y:
                 if x == '1':
-                    ser.write(high_serial_str[i].encode())
-                    sleep(sleeptime)
-
+                    string += high_serial_str[i]
                 elif x == '0':
-                    ser.write(low_serial_str[i].encode())
-                    sleep(sleeptime)
+                    string += low_serial_str[i]
             i += 1
+        ser.write(string.encode())
+        sleep(sleeptime)
         var0 = var
     return var0
 
