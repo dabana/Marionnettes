@@ -37,11 +37,10 @@ def send_direction(var, var0, string):
 
 def send_buttons(var, var0):
     global high_serial_str, low_serial_str
-
+    string = ''
     if var != var0:
         print('a button was pressed or released')
         i = 0
-        string = '4'
         for x, y in zip(var, var0):
             if x != y:
                 if x == '1':
@@ -49,9 +48,12 @@ def send_buttons(var, var0):
                 elif x == '0':
                     string += low_serial_str[i]
             i += 1
+        var0 = var
+
+    if len(string) > 0:
+        string = str(len(string)) + string
         ser.write(string.encode())
         sleep(sleeptime)
-        var0 = var
     return var0
 
 
