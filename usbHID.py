@@ -26,8 +26,6 @@ high_serial_str = ['ddh', 'dch', 'dbh', 'd9h']
 low_serial_str = ['ddl', 'dcl', 'dbl', 'd9l']
 
 sleeptime = 0.1
-stringin = ''
-stringout = ''
 
 
 def send_direction(var, var0, string):
@@ -37,21 +35,23 @@ def send_direction(var, var0, string):
     return var0
 
 
-def send_buttons(var, var0, string):
+def send_buttons(var, var0):
     global high_serial_str, low_serial_str
 
     print('a button was pressed or released')
+    string = '4'
     i = 0
-    for x, y in zip(var, var0):
-        if x != y:
-            if x == '1':
-                string += high_serial_str[i]
-            elif x == '0':
-                string += low_serial_str[i]
+    for x in var:
+        if x == '1':
+            string += high_serial_str[i]
+        elif x == '0':
+            string += low_serial_str[i]
         i += 1
+    print('to print: ' + string)
+    ser.write(string.encode())
+    sleep(sleeptime)
     var0 = var
-
-    return string, var0
+    return var0
 
 
 def sample_handler(data):
@@ -84,15 +84,8 @@ def sample_handler(data):
 
     #Handle Y,A,B,X buttons
     if YBAXstr != YBAXstr0:
-        stringout, YBAXstr0 = send_buttons(YBAXstr, YBAXstr0, stringin)
-        stringin = stringout
+        YBAXstr0 = send_buttons(YBAXstr, YBAXstr0)
 
-    if len(stringout) > 0 and YBAXstr == YBAXstr0:
-        string2send = str(len(stringout)) + stringout
-        ser.write(string2send.encode())
-        sleep(sleeptime)
-        stringin = ''
-        stringout = ''
 
 def parse_data(data):
 
