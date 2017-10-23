@@ -25,7 +25,7 @@ SrtSltstr0 = '00'
 high_serial_str = ['ddh', 'dch', 'dbh', 'd9h']
 low_serial_str = ['ddl', 'dcl', 'dbl', 'd9l']
 
-sleeptime = 0.1
+sleeptime = 0.01
 
 
 def send_direction(var, var0, string):
