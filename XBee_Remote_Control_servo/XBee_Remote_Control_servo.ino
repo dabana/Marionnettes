@@ -104,6 +104,18 @@ void writeServoPin()
   testservo.attach(pin, 1000, 2000);
 }
 
+void writeDPin()
+{
+  while (XBee.available() < 2)
+    ; // Wait for pin and value to become available
+  char pin = XBee.read();
+  hl = ASCIItoHL(XBee.read());
+
+  pin = ASCIItoInt(pin); // Convert ASCCI to a 0-13 value
+  pinMode(pin, OUTPUT); // Set pin as an OUTPUT
+  digitalWrite(pin, hl); // Write pin accordingly
+}
+
 // ASCIItoHL
 // Helper function to turn an ASCII value into either HIGH or LOW
 int ASCIItoHL(char c)
