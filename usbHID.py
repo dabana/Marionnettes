@@ -25,11 +25,18 @@ SrtSltstr0 = '00'
 high_serial_str = ['ddh', 'dch', 'dbh', 'd9h']
 low_serial_str = ['ddl', 'dcl', 'dbl', 'd9l']
 
-sleeptime = 0.01
+sleeptime = 0.1
 
 
 def send_direction(var, var0, string):
-    ser.write(string.encode())
+    global ser
+    try:
+        print('try ...')
+        ser.write(string.encode())
+    except:
+        print('failed somehow ...')
+        ser = serial.Serial('COM3', 9600)
+        pass
     sleep(sleeptime)
     var0 = var
     return var0

@@ -54,7 +54,7 @@ SoftwareSerial XBee(2, 3); // Arduino RX, TX (XBee Dout, Din)
 Servo testservo;
 uint32_t angle[]= {1000, 1500, 2000};
 char hl = LOW;
-char dl = HIGH;
+char dl = LOW;
 
 
 void setup()
@@ -113,7 +113,7 @@ void writeServoPin()
   pin = ASCIItoInt(pin); // Convert ASCCI to a 0-13 value
   pinMode(pin, OUTPUT); // Set pin as an OUTPUT
   //digitalWrite(pin, hl); // Write pin accordingly
-  hl, dl = MoveServo(pin, hl, dl);
+  MoveServo(pin, hl, dl);
 }
 
 // Write Digital Pin
@@ -262,9 +262,15 @@ bool MoveServo(int pin, bool hl, bool dl)
   // mix & max limits, in microseconds.
   // Be careful with shorter or longer pulses.
   testservo.attach(pin, 1000, 2000);
-  
-  testservo.writeMicroseconds(angle[0]);
-  delay(100);
-  testservo.writeMicroseconds(angle[1]);
+
+  if(hl == HIGH)
+  {
+    testservo.writeMicroseconds(angle[0]);
+  }
+
+  if(hl == LOW)
+  {
+    testservo.writeMicroseconds(angle[1]);
+  }
   
  }
