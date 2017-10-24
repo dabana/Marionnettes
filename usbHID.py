@@ -71,15 +71,18 @@ def sample_handler(data):
 
     #Handle directions
     if lr == '1' and lr != lr0:
-        i = (i + 1) % 9
-        lr0 = send_direction(lr, lr0, '1sah' + str(i))
+        if i < 9:
+            i += 1
+            lr0 = send_direction(lr, lr0, '1sah' + str(i))
         print('going right: ' + str(i))
     elif lr == '-1' and lr != lr0:
-        lr0 = send_direction(lr, lr0, '1sahl')
+        if i > 0:
+            i -= 1
+            lr0 = send_direction(lr, lr0, '1sah' + str(i))
         print('going left')
     elif lr == '0' and lr != lr0:
-        lr0 = send_direction(lr, lr0, '1sal' +str(i))
-        lr0 = send_direction(lr, lr0, '1sal' +str(i))
+        lr0 = send_direction(lr, lr0, '1sal' + str(i))
+        lr0 = send_direction(lr, lr0, '1sal' + str(i))
     if ud == '1' and ud != ud0:
         ud0 = send_direction(ud, ud0, '1sahh')
         print('going up')
