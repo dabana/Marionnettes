@@ -52,9 +52,9 @@ Distributed as-is; no warranty is given.
 
 SoftwareSerial XBee(2, 3); // Arduino RX, TX (XBee Dout, Din)
 Servo testservo;
-uint32_t angle[]= {1200, 1250, 1300, 1350, 1400};
-uint32_t nb_of_angles = sizeof(angle);
-uint32_t angle_i = 0;
+uint32_t angle[]= {1000, 1500, 2000};
+char hl = LOW;
+char dl = HIGH;
 
 
 void setup()
@@ -63,7 +63,6 @@ void setup()
   // rate matches your XBee setting (9600 is default).
   XBee.begin(9600); 
   printMenu(); // Print a helpful menu:
-  testservo.writeMicroseconds(angle[angle_i]);
 }
 
 void loop(){
@@ -76,6 +75,10 @@ void loop(){
       if (XBee.available()){
       char c = XBee.read();
         switch (c){
+        case 's':      // If received 'w'
+        case 'S':      // or 'W'
+          writeServoPin(); // Write Servo pin
+          break;
         case 'w':      // If received 'w'
         case 'W':      // or 'W'
           writeAPin(); // Write analog pin
@@ -97,6 +100,22 @@ void loop(){
   } //for
 } //voidloop
 
+
+
+void writeServoPin()
+{
+  while (XBee.available() < 3)
+    ; // Wait for pin and value to become available
+  char pin = XBee.read(); //pin of the servo
+  hl = ASCIItoHL(XBee.read()); // servo On of Off
+  dl = ASCIItoHL(XBee.read()); // servo direction h:left, l:right
+
+  pin = ASCIItoInt(pin); // Convert ASCCI to a 0-13 value
+  pinMode(pin, OUTPUT); // Set pin as an OUTPUT
+  //digitalWrite(pin, hl); // Write pin accordingly
+  hl, dl = MoveServo(pin, hl, dl);
+}
+
 // Write Digital Pin
 // Send a 'd' or 'D' to enter.
 // Then send a pin #
@@ -109,12 +128,11 @@ void writeDPin()
   while (XBee.available() < 2)
     ; // Wait for pin and value to become available
   char pin = XBee.read();
-  char hl = ASCIItoHL(XBee.read());
+  hl = ASCIItoHL(XBee.read());
 
   pin = ASCIItoInt(pin); // Convert ASCCI to a 0-13 value
   pinMode(pin, OUTPUT); // Set pin as an OUTPUT
-  //digitalWrite(pin, hl); // Write pin accordingly
-  angle_i = MoveServo(pin, hl);
+  digitalWrite(pin, hl); // Write pin accordingly
 }
 
 // Write Analog Pin
@@ -238,18 +256,15 @@ void printMenu()
 }
 
 
-uint32_t MoveServo(int pin, bool hl)
+bool MoveServo(int pin, bool hl, bool dl)
 {
   // the 1000 & 2000 set the pulse width 
   // mix & max limits, in microseconds.
   // Be careful with shorter or longer pulses.
   testservo.attach(pin, 1000, 2000);
-
-
-      if(hl == LOW){
-        angle_i = (angle_i + 1) % nb_of_angles;
-        testservo.writeMicroseconds(angle[angle_i]);
-      }
-
-  return angle_i;
+  
+  testservo.writeMicroseconds(angle[0]);
+  delay(100);
+  testservo.writeMicroseconds(angle[1]);
+  
  }
