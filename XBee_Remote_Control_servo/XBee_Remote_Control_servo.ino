@@ -67,12 +67,12 @@ void setup()
 
 void loop(){
     if(hl == HIGH && dl == HIGH){
-        if(i < 90){i += 1;}
-        testservo.write(i);
+        if(i < 18000){i += 1;}
+        testservo.write(i/100);
         }
     if(hl == HIGH && dl == LOW){
         if(i > 0){i -= 1;}
-        testservo.write(i);
+        testservo.write(i/100);
         }
   // In loop() we continously check to see if a command has been
   //  received.
