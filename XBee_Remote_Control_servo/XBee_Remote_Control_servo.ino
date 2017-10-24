@@ -52,9 +52,10 @@ Distributed as-is; no warranty is given.
 
 SoftwareSerial XBee(2, 3); // Arduino RX, TX (XBee Dout, Din)
 Servo testservo;
-uint32_t angle[]= {0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65,  70, 75, 80, 85, 90};
+uint32_t angle[]= {1200, 1250, 1300, 1350, 1400};
 uint32_t nb_of_angles = sizeof(angle);
 uint32_t angle_i = 0;
+
 
 void setup()
 {
@@ -62,7 +63,7 @@ void setup()
   // rate matches your XBee setting (9600 is default).
   XBee.begin(9600); 
   printMenu(); // Print a helpful menu:
-
+  testservo.writeMicroseconds(angle[angle_i]);
 }
 
 void loop(){
@@ -113,7 +114,7 @@ void writeDPin()
   pin = ASCIItoInt(pin); // Convert ASCCI to a 0-13 value
   pinMode(pin, OUTPUT); // Set pin as an OUTPUT
   //digitalWrite(pin, hl); // Write pin accordingly
-  angle = MoveServo(pin, hl);
+  angle_i = MoveServo(pin, hl);
 }
 
 // Write Analog Pin
@@ -244,17 +245,11 @@ uint32_t MoveServo(int pin, bool hl)
   // Be careful with shorter or longer pulses.
   testservo.attach(pin, 1000, 2000);
 
-  if(angle_i < (nb_of_angles - 1)){
+
       if(hl == LOW){
         angle_i = (angle_i + 1) % nb_of_angles;
-        testservo.write(angle);
+        testservo.writeMicroseconds(angle[angle_i]);
       }
-  }
-  else if(angle_i > 0){
-      if(hl == HIGH){
-        angle = (angle_i - 1) % nb_of_angles;
-        testservo.write(angle);
-      }
-  }
-  return angle;
+
+  return angle_i;
  }
