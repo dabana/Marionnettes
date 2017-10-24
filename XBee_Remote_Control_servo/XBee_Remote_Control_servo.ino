@@ -52,7 +52,9 @@ Distributed as-is; no warranty is given.
 
 SoftwareSerial XBee(2, 3); // Arduino RX, TX (XBee Dout, Din)
 Servo testservo;
-uint32_t angle=0;
+uint32_t angle[]= {0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65,  70, 75, 80, 85, 90};
+uint32_t nb_of_angles = sizeof(angle);
+uint32_t angle_i = 0;
 
 void setup()
 {
@@ -241,18 +243,16 @@ uint32_t MoveServo(int pin, bool hl)
   // mix & max limits, in microseconds.
   // Be careful with shorter or longer pulses.
   testservo.attach(pin, 1000, 2000);
-  testservo.write(angle);
 
-
-  if(angle < 85){
+  if(angle_i < (nb_of_angles - 1)){
       if(hl == LOW){
-        angle = (angle + 2);
+        angle_i = (angle_i + 1) % nb_of_angles;
         testservo.write(angle);
       }
   }
-  else if(angle > 5){
+  else if(angle_i > 0){
       if(hl == HIGH){
-        angle = (angle - 2);
+        angle = (angle_i - 1) % nb_of_angles;
         testservo.write(angle);
       }
   }
