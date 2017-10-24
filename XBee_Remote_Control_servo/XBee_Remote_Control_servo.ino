@@ -67,9 +67,10 @@ void setup()
 }
 
 void loop(){
-  
+  testservo.write(dl*20);
   // In loop() we continously check to see if a command has been
   //  received.
+  
   char N = XBee.read();
   // The first digit correspond to the number of commands stringed together
   for(int i = 1; i <= N; i++){
@@ -109,8 +110,7 @@ void writeServoPin()
     ; // Wait for pin and value to become available
   char pin = XBee.read(); //pin of the servo
   hl = ASCIItoHL(XBee.read()); // servo On of Off
-  dl = ASCIItoHL(XBee.read()); // servo direction h:left, l:right
-
+  dl = ASCIItoInt(XBee.read()); // 
   pin = ASCIItoInt(pin); // Convert ASCCI to a 0-13 value
   pinMode(pin, OUTPUT); // Set pin as an OUTPUT
   //digitalWrite(pin, hl); // Write pin accordingly
@@ -258,24 +258,8 @@ void printMenu()
 }
 
 
-bool MoveServo(int pin, bool hl, bool dl)
-{
-  // the 1000 & 2000 set the pulse width 
-  // mix & max limits, in microseconds.
-  // Be careful with shorter or longer pulses.
+bool MoveServo(int pin, bool hl, bool dl){
+  ;
+}
 
 
-  if(hl == HIGH)
-  {
-    testservo.writeMicroseconds(angle[i % 5]);
-    delay(15);
-  }
-
-  if(hl == LOW)
-  {
-    testservo.writeMicroseconds(angle[0]);
-    delay(15);
-    i += 1;
-  }
-  
- }

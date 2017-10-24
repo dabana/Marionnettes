@@ -24,7 +24,7 @@ SrtSltstr0 = '00'
 
 high_serial_str = ['ddh', 'dch', 'dbh', 'd9h']
 low_serial_str = ['ddl', 'dcl', 'dbl', 'd9l']
-
+i = 0
 sleeptime = 0.1
 
 
@@ -62,7 +62,7 @@ def send_buttons(var, var0):
 
 
 def sample_handler(data):
-    global lr0, ud0, YBAXstr0, RLstr0, SrtSltstr0, stringin, stringout
+    global lr0, ud0, YBAXstr0, RLstr0, SrtSltstr0, stringin, stringout,i
     # t0 = time.time()
     lr, ud, YBAXstr, RLstr, SrtSltstr = parse_data(data)
     #deltat = (time.time() - t0)
@@ -71,14 +71,15 @@ def sample_handler(data):
 
     #Handle directions
     if lr == '1' and lr != lr0:
-        lr0 = send_direction(lr, lr0, '1sahh')
-        print('going right')
+        i = (i + 1) % 9
+        lr0 = send_direction(lr, lr0, '1sah' + str(i))
+        print('going right: ' + str(i))
     elif lr == '-1' and lr != lr0:
         lr0 = send_direction(lr, lr0, '1sahl')
         print('going left')
     elif lr == '0' and lr != lr0:
-        lr0 = send_direction(lr, lr0, '1sall')
-        lr0 = send_direction(lr, lr0, '1sall')
+        lr0 = send_direction(lr, lr0, '1sal' +str(i))
+        lr0 = send_direction(lr, lr0, '1sal' +str(i))
     if ud == '1' and ud != ud0:
         ud0 = send_direction(ud, ud0, '1sahh')
         print('going up')
