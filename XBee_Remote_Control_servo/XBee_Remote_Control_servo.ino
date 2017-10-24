@@ -52,7 +52,7 @@ Distributed as-is; no warranty is given.
 
 SoftwareSerial XBee(2, 3); // Arduino RX, TX (XBee Dout, Din)
 Servo testservo;
-uint32_t angle[]= {1050,1100, 1150,1200,1250};
+
 uint32_t i = 0;
 char hl = LOW;
 char dl = LOW;
@@ -63,11 +63,17 @@ void setup()
   // Initialize XBee Software Serial port. Make sure the baud
   // rate matches your XBee setting (9600 is default).
   XBee.begin(9600); 
-  printMenu(); // Print a helpful menu:
 }
 
 void loop(){
-  testservo.write(dl*20);
+    if(hl == HIGH && dl == HIGH){
+        if(i < 90){i += 1;}
+        testservo.write(i);
+        }
+    if(hl == HIGH && dl == LOW){
+        if(i > 0){i -= 1;}
+        testservo.write(i);
+        }
   // In loop() we continously check to see if a command has been
   //  received.
   
@@ -75,30 +81,11 @@ void loop(){
   // The first digit correspond to the number of commands stringed together
   for(int i = 1; i <= N; i++){
       if (XBee.available()){
-      char c = XBee.read();
-        switch (c){
-        case 's':      // If received 'w'
-        case 'S':      // or 'W'
-          writeServoPin(); // Write Servo pin
-          break;
-        case 'w':      // If received 'w'
-        case 'W':      // or 'W'
-          writeAPin(); // Write analog pin
-          break;
-        case 'd':      // If received 'd'
-        case 'D':      // or 'D'
-          writeDPin(); // Write digital pin
-          break;
-        case 'r':      // If received 'r'
-        case 'R':      // or 'R'
-          readDPin();  // Read digital pin
-          break;
-        case 'a':      // If received 'a'
-        case 'A':      // or 'A'
-          readAPin();  // Read analog pin
-          break;
-      } //switch
-    } //if
+        char c = XBee.read();
+        if((c == 's') || (c == 'S')){
+            writeServoPin();
+        } //if
+      } //if
   } //for
 } //voidloop
 
@@ -110,95 +97,11 @@ void writeServoPin()
     ; // Wait for pin and value to become available
   char pin = XBee.read(); //pin of the servo
   hl = ASCIItoHL(XBee.read()); // servo On of Off
-  dl = ASCIItoInt(XBee.read()); // 
+  dl = ASCIItoHL(XBee.read()); //
   pin = ASCIItoInt(pin); // Convert ASCCI to a 0-13 value
   pinMode(pin, OUTPUT); // Set pin as an OUTPUT
   //digitalWrite(pin, hl); // Write pin accordingly
   testservo.attach(pin, 1000, 2000);
-  MoveServo(pin, hl, dl);
-}
-
-// Write Digital Pin
-// Send a 'd' or 'D' to enter.
-// Then send a pin #
-//   Use numbers for 0-9, and hex (a, b, c, or d) for 10-13
-// Then send a value for high or low
-//   Use h, H, or 1 for HIGH. Use l, L, or 0 for LOW
-
-void writeDPin()
-{
-  while (XBee.available() < 2)
-    ; // Wait for pin and value to become available
-  char pin = XBee.read();
-  hl = ASCIItoHL(XBee.read());
-
-  pin = ASCIItoInt(pin); // Convert ASCCI to a 0-13 value
-  pinMode(pin, OUTPUT); // Set pin as an OUTPUT
-  digitalWrite(pin, hl); // Write pin accordingly
-}
-
-// Write Analog Pin
-// Send 'w' or 'W' to enter
-// Then send a pin #
-//   Use numbers for 0-9, and hex (a, b, c, or d) for 10-13
-//   (it's not smart enough (but it could be) to error on
-//    a non-analog output pin)
-// Then send a 3-digit analog value.
-//   Must send all 3 digits, so use leading zeros if necessary.
-void writeAPin()
-{
-  while (XBee.available() < 4)
-    ; // Wait for pin and three value numbers to be received
-  char pin = XBee.read(); // Read in the pin number
-  int value = ASCIItoInt(XBee.read()) * 100; // Convert next three
-  value += ASCIItoInt(XBee.read()) * 10;     // chars to a 3-digit
-  value += ASCIItoInt(XBee.read());          // number.
-  value = constrain(value, 0, 255); // Constrain that number.
-
-  pin = ASCIItoInt(pin); // Convert ASCCI to a 0-13 value
-  pinMode(pin, OUTPUT); // Set pin as an OUTPUT
-  analogWrite(pin, value); // Write pin accordingly
-}
-
-// Read Digital Pin
-// Send 'r' or 'R' to enter
-// Then send a digital pin # to be read
-// The Arduino will print the digital reading of the pin to XBee.
-void readDPin()
-{
-  while (XBee.available() < 1)
-    ; // Wait for pin # to be available.
-  char pin = XBee.read(); // Read in the pin value
-
-  // Print beggining of message
-  XBee.print("Pin ");
-  XBee.print(pin);
-
-  pin = ASCIItoInt(pin); // Convert pin to 0-13 value
-  pinMode(pin, INPUT); // Set as input
-  // Print the rest of the message:
-  XBee.print(" = "); 
-  XBee.println(digitalRead(pin));
-}
-
-// Read Analog Pin
-// Send 'a' or 'A' to enter
-// Then send an analog pin # to be read.
-// The Arduino will print the analog reading of the pin to XBee.
-void readAPin()
-{
-  while (XBee.available() < 1)
-    ; // Wait for pin # to be available
-  char pin = XBee.read(); // read in the pin value
-
-  // Print beginning of message
-  XBee.print("Pin A");
-  XBee.print(pin);
-
-  pin = ASCIItoInt(pin); // Convert pin to 0-6 value
-  // Printthe rest of the message:
-  XBee.print(" = ");
-  XBee.println(analogRead(pin));
 }
 
 // ASCIItoHL
@@ -229,37 +132,5 @@ int ASCIItoInt(char c)
     return -1;
 }
 
-// printMenu
-// A big ol' string of Serial prints that print a usage menu over
-// to the other XBee.
-void printMenu()
-{
-  // Everything is "F()"'d -- which stores the strings in flash.
-  // That'll free up SRAM for more importanat stuff.
-  XBee.println();
-  XBee.println(F("Arduino XBee Remote Control!"));
-  XBee.println(F("============================"));
-  XBee.println(F("Usage: "));
-  XBee.println(F("w#nnn - analog WRITE pin # to nnn"));
-  XBee.println(F("  e.g. w6088 - write pin 6 to 88"));
-  XBee.println(F("d#v   - digital WRITE pin # to v"));
-  XBee.println(F("  e.g. ddh - Write pin 13 High"));
-  XBee.println(F("r#    - digital READ digital pin #"));
-  XBee.println(F("  e.g. r3 - Digital read pin 3"));
-  XBee.println(F("a#    - analog READ analog pin #"));
-  XBee.println(F("  e.g. a0 - Read analog pin 0"));
-  XBee.println();
-  XBee.println(F("- Use hex values for pins 10-13"));
-  XBee.println(F("- Upper or lowercase works"));
-  XBee.println(F("- Use 0, l, or L to write LOW"));
-  XBee.println(F("- Use 1, h, or H to write HIGH"));
-  XBee.println(F("============================"));  
-  XBee.println();
-}
-
-
-bool MoveServo(int pin, bool hl, bool dl){
- ;
-}
 
 
