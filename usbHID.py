@@ -90,15 +90,15 @@ def parse_data(data):
     if trimmed_data[1] == 0:
         ud = '2' #down
     elif trimmed_data[1] == 255:
-        ud = '1' #up
+        ud = '0' #up
     else:
-        ud = '0' #center
+        ud = '1' #center
     if trimmed_data[0] == 0:
         lr = '2' #left
     elif trimmed_data[0] == 255:
-        lr = '1' #right
+        lr = '0' #right
     else:
-        lr = '0'
+        lr = '1'
 
     lrud = lr + ud
     #print('lrud = ' + lrud)

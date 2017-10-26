@@ -54,11 +54,11 @@ SoftwareSerial XBee(2, 3); // Arduino RX, TX (XBee Dout, Din)
 Servo testservo1;
 Servo testservo2;
 uint32_t incr = 100;
-uint32_t i1 = 9000;
-uint32_t i2 = 9000;
+uint32_t i1 = 0;
+uint32_t i2 = 0;
 bool hl;
-int pls1 = 0;
-int pls2 = 0;
+int pls1 = 1;
+int pls2 = 1;
 
 void setup()
 {
@@ -70,12 +70,16 @@ void setup()
 }
 
 void loop(){
-  if (i1 > 0 && i1 < 18000)
-    i1 += pls1;
-    testservo1.write(i1 / incr);
-  if (i2 > 0 && i2 < 18000)
-    i2 += pls2;
-    testservo2.write(i2 / incr);
+  if (i1 > 0 && i1 < 18000){
+    i1 = i1 + (pls1 - 1);
+
+    }
+  if (i2 > 0 && i2 < 18000){
+    i2 = i2 + (pls2 - 1);
+
+    }
+    testservo1.writeMicroseconds(i1 / incr);
+    testservo2.writeMicroseconds(i2 / incr);
   // In loop() we continously check to see if a command has been
   //  received.
   char N = XBee.read();
@@ -97,8 +101,8 @@ void writeServoPin()
 {
   while (XBee.available() < 2)
     ; // Wait for pin and value to become available
-  pls1 = ASCIItoSigInt(XBee.read(), i1);
-  pls2 = ASCIItoSigInt(XBee.read(), i2);
+  pls1 = ASCIItoInt(XBee.read());
+  pls2 = ASCIItoInt(XBee.read());
 }
 
 void writeDPin()
