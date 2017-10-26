@@ -52,7 +52,7 @@ Distributed as-is; no warranty is given.
 
 SoftwareSerial XBee(2, 3); // Arduino RX, TX (XBee Dout, Din)
 Servo testservo;
-uint32_t incr = 10;
+uint32_t incr = 20;
 uint32_t i = 0;
 char hl = LOW;
 char dl = LOW;
