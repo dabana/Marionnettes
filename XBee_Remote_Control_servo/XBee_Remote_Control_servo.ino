@@ -57,12 +57,15 @@ uint32_t i = 0;
 char hl = LOW;
 char dl = LOW;
 
+=======
+
+SoftwareSerial XBee(2, 3); // Arduino RX, TX (XBee Dout, Din)
 
 void setup()
 {
   // Initialize XBee Software Serial port. Make sure the baud
   // rate matches your XBee setting (9600 is default).
-  XBee.begin(9600); 
+  XBee.begin(9600);
 }
 
 void loop(){
@@ -76,7 +79,15 @@ void loop(){
         }
   // In loop() we continously check to see if a command has been
   //  received.
+
+  printMenu(); // Print a helpful menu:
+
+}
+
+void loop(){
   
+  // In loop() we continously check to see if a command has been
+  //  received.
   char N = XBee.read();
   // The first digit correspond to the number of commands stringed together
   for(int i = 1; i <= N; i++){
@@ -115,7 +126,11 @@ void writeDPin()
   pin = ASCIItoInt(pin); // Convert ASCCI to a 0-13 value
   pinMode(pin, OUTPUT); // Set pin as an OUTPUT
   digitalWrite(pin, hl); // Write pin accordingly
-}
+
+ }
+
+
+
 
 // ASCIItoHL
 // Helper function to turn an ASCII value into either HIGH or LOW
@@ -144,6 +159,3 @@ int ASCIItoInt(char c)
   else
     return -1;
 }
-
-
-
