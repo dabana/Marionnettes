@@ -51,33 +51,31 @@ Distributed as-is; no warranty is given.
 #include <Servo.h>
 
 SoftwareSerial XBee(2, 3); // Arduino RX, TX (XBee Dout, Din)
-Servo testservo;
-uint32_t incr = 10;
-uint32_t i = 0;
-char hl = LOW;
-char dl = LOW;
+Servo testservo1;
+Servo testservo2;
+uint32_t incr = 100;
+uint32_t i1 = 9000;
+uint32_t i2 = 9000;
+bool hl;
+int pls1 = 0;
+int pls2 = 0;
 
 void setup()
 {
   // Initialize XBee Software Serial port. Make sure the baud
   // rate matches your XBee setting (9600 is default).
   XBee.begin(9600);
-  testservo.attach(10, 1000, 2000);
+  testservo1.attach(10, 1000, 2000);
+  testservo2.attach(11, 1000, 2000);
 }
 
 void loop(){
-    if(hl == HIGH && dl == HIGH){
-        if(i < (18 * 10 * incr)){i += 1;}
-        testservo.write(i / incr);
-        }
-    if(hl == HIGH && dl == LOW){
-        if(i > 100){i -= 1;}
-        testservo.write(i/incr);
-        }
-    if(hl == LOW){
-        testservo.write(i/incr);
-    }
-  
+  if (i1 > 0 && i1 < 18000)
+    i1 += pls1;
+    testservo1.write(i1 / incr);
+  if (i2 > 0 && i2 < 18000)
+    i2 += pls2;
+    testservo2.write(i2 / incr);
   // In loop() we continously check to see if a command has been
   //  received.
   char N = XBee.read();
@@ -97,15 +95,10 @@ void loop(){
 
 void writeServoPin()
 {
-  while (XBee.available() < 3)
+  while (XBee.available() < 2)
     ; // Wait for pin and value to become available
-  char pin = XBee.read(); //pin of the servo
-  hl = ASCIItoHL(XBee.read()); // servo On of Off
-  dl = ASCIItoHL(XBee.read()); //
-  pin = ASCIItoInt(pin); // Convert ASCCI to a 0-13 value
-  pinMode(pin, OUTPUT); // Set pin as an OUTPUT
-  //digitalWrite(pin, hl); // Write pin accordingly
-  //testservo.attach(pin, 1000, 2000);
+  pls1 = ASCIItoSigInt(XBee.read(), i1);
+  pls2 = ASCIItoSigInt(XBee.read(), i2);
 }
 
 void writeDPin()
@@ -114,7 +107,6 @@ void writeDPin()
     ; // Wait for pin and value to become available
   char pin = XBee.read();
   hl = ASCIItoHL(XBee.read());
-
   pin = ASCIItoInt(pin); // Convert ASCCI to a 0-13 value
   pinMode(pin, OUTPUT); // Set pin as an OUTPUT
   digitalWrite(pin, hl); // Write pin accordingly
@@ -150,4 +142,15 @@ int ASCIItoInt(char c)
     return c - 0x57; // Minus 0x61 plus 0x0A
   else
     return -1;
+}
+
+int ASCIItoSigInt(char c, int i)
+{
+
+  if ((c == '1') && i < 18000)
+    return 1;
+  else if ((c == '2') && i > 0)
+    return -1;
+  else
+    return 0;
 }

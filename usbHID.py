@@ -18,6 +18,7 @@ def show_specific_device(target_vendor_id, target_product_id):
 
 lr0 = '0'
 ud0 = '0'
+lrud0 = '00'
 YBAXstr0 = '0000'
 RLstr0 = '00'
 SrtSltstr0 = '00'
@@ -62,34 +63,19 @@ def send_buttons(var, var0):
 
 
 def sample_handler(data):
-    global lr0, ud0, YBAXstr0, RLstr0, SrtSltstr0, stringin, stringout,i
+    global lrud0, YBAXstr0, RLstr0, SrtSltstr0, stringin, stringout,i
     # t0 = time.time()
-    lr, ud, YBAXstr, RLstr, SrtSltstr = parse_data(data)
+    lrud, YBAXstr, RLstr, SrtSltstr = parse_data(data)
     #deltat = (time.time() - t0)
     #print('Up/down: ' + lr + ', Left/Right: ' + ud + ', YBAX string: ' + YBAXstr + ', RL string: ' + RLstr + ', SrtSlt string:' + SrtSltstr)
     #print('Took %.15f seconds' % deltat)
 
     #Handle directions
-    if lr == '1' and lr != lr0:
+    if lrud != lrud0:
 
-        lr0 = send_direction(lr, lr0, '1sahh')
-        print('going right: ' + str(i))
-    elif lr == '-1' and lr != lr0:
+        lrud0 = send_direction(lrud, lrud0, '1s' + lrud)
+        print('going: ' + lrud)
 
-        lr0 = send_direction(lr, lr0, '1sahl')
-        print('going left')
-    elif lr == '0' and lr != lr0:
-        lr0 = send_direction(lr, lr0, '1sall')
-        lr0 = send_direction(lr, lr0, '1sall')
-    # if ud == '1' and ud != ud0:
-    #     ud0 = send_direction(ud, ud0, '1sbhh')
-    #     print('going up')
-    # elif ud == '-1' and ud != ud0:
-    #     ud0 = send_direction(ud, ud0, '1sbhl')
-    #     print('going down')
-    # elif ud == '0' and ud != ud0:
-    #     ud0 = send_direction(ud, ud0, '1sbll')
-    #     ud0 = send_direction(ud, ud0, '1sbll')
 
     #Handle Y,A,B,X buttons
     if YBAXstr != YBAXstr0:
@@ -102,18 +88,20 @@ def parse_data(data):
 
     #extract directions
     if trimmed_data[1] == 0:
-        ud = '-1' #down
+        ud = '2' #down
     elif trimmed_data[1] == 255:
         ud = '1' #up
     else:
         ud = '0' #center
     if trimmed_data[0] == 0:
-        lr = '-1' #left
+        lr = '2' #left
     elif trimmed_data[0] == 255:
         lr = '1' #right
     else:
         lr = '0'
 
+    lrud = lr + ud
+    #print('lrud = ' + lrud)
     #extract A, B, X, Y buttons
     # [Y, B, A, X]
     YBAXstr = bin(trimmed_data[2])[2:].zfill(8)
@@ -130,7 +118,7 @@ def parse_data(data):
     SrtSltstr = SrtSltstr[2:4]
 
     #print('Up/down: ' + lr + ', Left/Right: ' + ud + ', YBAX string: ' + YBAXstr + ', RL string: ' + RLstr + ', SrtSlt string:' + SrtSltstr)
-    return lr, ud, YBAXstr, RLstr, SrtSltstr
+    return lrud, YBAXstr, RLstr, SrtSltstr
 
 
 def get_data(device):
