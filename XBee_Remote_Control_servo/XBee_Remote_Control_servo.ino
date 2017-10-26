@@ -73,10 +73,6 @@ void loop(){
         if(i > 0){i -= 1;}
         testservo.write(i/100);
         }
-
-}
-
-void loop(){
   
   // In loop() we continously check to see if a command has been
   //  received.
