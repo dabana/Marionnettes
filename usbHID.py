@@ -80,7 +80,6 @@ def sample_handler(data):
         print('going left')
     elif lr == '0' and lr != lr0:
         lr0 = send_direction(lr, lr0, '1sall')
-        lr0 = send_direction(lr, lr0, '1sall')
     # if ud == '1' and ud != ud0:
     #     ud0 = send_direction(ud, ud0, '1sbhh')
     #     print('going up')
