@@ -52,7 +52,7 @@ Distributed as-is; no warranty is given.
 
 SoftwareSerial XBee(2, 3); // Arduino RX, TX (XBee Dout, Din)
 Servo testservo;
-
+uint32_t incr = 10;
 uint32_t i = 0;
 char hl = LOW;
 char dl = LOW;
@@ -62,17 +62,21 @@ void setup()
   // Initialize XBee Software Serial port. Make sure the baud
   // rate matches your XBee setting (9600 is default).
   XBee.begin(9600);
+  testservo.attach(10, 1000, 2000);
 }
 
 void loop(){
     if(hl == HIGH && dl == HIGH){
-        if(i < 18000){i += 1;}
-        testservo.write(i/100);
+        if(i < (18 * 10 * incr)){i += 1;}
+        testservo.write(i / incr);
         }
     if(hl == HIGH && dl == LOW){
-        if(i > 0){i -= 1;}
-        testservo.write(i/100);
+        if(i > 100){i -= 1;}
+        testservo.write(i/incr);
         }
+    if(hl == LOW){
+        testservo.write(i/incr);
+    }
   
   // In loop() we continously check to see if a command has been
   //  received.
@@ -80,7 +84,7 @@ void loop(){
   // The first digit correspond to the number of commands stringed together
   for(int i = 1; i <= N; i++){
       if (XBee.available()){
-      testservo.detach();
+      //testservo.detach();
         char c = XBee.read();
         if((c == 's') || (c == 'S')){
             writeServoPin();
@@ -101,7 +105,7 @@ void writeServoPin()
   pin = ASCIItoInt(pin); // Convert ASCCI to a 0-13 value
   pinMode(pin, OUTPUT); // Set pin as an OUTPUT
   //digitalWrite(pin, hl); // Write pin accordingly
-  testservo.attach(pin, 1000, 2000);
+  //testservo.attach(pin, 1000, 2000);
 }
 
 void writeDPin()

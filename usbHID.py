@@ -81,15 +81,15 @@ def sample_handler(data):
     elif lr == '0' and lr != lr0:
         lr0 = send_direction(lr, lr0, '1sall')
         lr0 = send_direction(lr, lr0, '1sall')
-    if ud == '1' and ud != ud0:
-        ud0 = send_direction(ud, ud0, '1sahh')
-        print('going up')
-    elif ud == '-1' and ud != ud0:
-        ud0 = send_direction(ud, ud0, '1sahl')
-        print('going down')
-    elif ud == '0' and ud != ud0:
-        ud0 = send_direction(ud, ud0, '1sall')
-        ud0 = send_direction(ud, ud0, '1sall')
+    # if ud == '1' and ud != ud0:
+    #     ud0 = send_direction(ud, ud0, '1sbhh')
+    #     print('going up')
+    # elif ud == '-1' and ud != ud0:
+    #     ud0 = send_direction(ud, ud0, '1sbhl')
+    #     print('going down')
+    # elif ud == '0' and ud != ud0:
+    #     ud0 = send_direction(ud, ud0, '1sbll')
+    #     ud0 = send_direction(ud, ud0, '1sbll')
 
     #Handle Y,A,B,X buttons
     if YBAXstr != YBAXstr0:
