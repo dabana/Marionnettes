@@ -57,10 +57,6 @@ uint32_t i = 0;
 char hl = LOW;
 char dl = LOW;
 
-=======
-
-SoftwareSerial XBee(2, 3); // Arduino RX, TX (XBee Dout, Din)
-
 void setup()
 {
   // Initialize XBee Software Serial port. Make sure the baud
