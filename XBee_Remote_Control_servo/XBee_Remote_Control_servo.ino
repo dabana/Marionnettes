@@ -80,8 +80,8 @@ void loop(){
   char N = XBee.read();
   // The first digit correspond to the number of commands stringed together
   for(int i = 1; i <= N; i++){
-      testservo.detach();
       if (XBee.available()){
+      testservo.detach();
         char c = XBee.read();
         if((c == 's') || (c == 'S')){
             writeServoPin();
