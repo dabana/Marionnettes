@@ -65,6 +65,7 @@ int pls1 = 1;
 int pls2 = 1;
 int pls3 = 1;
 
+
 void setup()
 {
   // Initialize XBee Software Serial port. Make sure the baud
@@ -106,6 +107,7 @@ void loop(){
       testservo1.detach();
       testservo2.detach();
       testservo3.detach();
+
         char c = XBee.read();
         if((c == 's') || (c == 'S')){
             writeServoPin();
@@ -120,12 +122,14 @@ void writeServoPin()
 {
   while (XBee.available() < 3)
     ; // Wait for pin and value to become available
+
   pls1 = ASCIItoInt(XBee.read());
   pls2 = ASCIItoInt(XBee.read());
   pls3 = ASCIItoInt(XBee.read());
   testservo1.attach(10, 1000, 2000);
   testservo2.attach(11, 1000, 2000);
   testservo3.attach(9, 1000, 2000);
+
 }
 
 void writeDPin()
