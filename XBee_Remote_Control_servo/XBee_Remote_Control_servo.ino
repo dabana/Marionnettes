@@ -53,13 +53,17 @@ Distributed as-is; no warranty is given.
 SoftwareSerial XBee(2, 3); // Arduino RX, TX (XBee Dout, Din)
 Servo testservo1;
 Servo testservo2;
-int incr1 = 20;
+Servo testservo3;
+int incr1 = 5;
 int incr2 = 5;
+int incr3 = 5;
 int i1 = 90 * incr1;
 int i2 = 90 * incr2;
+int i3 = 90 * incr3;
 bool hl;
 int pls1 = 1;
 int pls2 = 1;
+int pls3 = 1;
 
 void setup()
 {
@@ -68,6 +72,7 @@ void setup()
   XBee.begin(9600);
   testservo1.attach(10, 1000, 2000);
   testservo2.attach(11, 1000, 2000);
+  testservo3.attach(12, 1000, 2000);
 }
 
 void loop(){
@@ -85,6 +90,13 @@ void loop(){
     i2 = i2 + (pls2 - 1);
     testservo2.write(i2 / incr2);
 
+  if (i3/incr3 > 0 && pls3 == 0)
+    i3 = i3 + (pls3 - 1);
+    testservo3.write(i3 / incr3);
+  if (i2/incr3 < 180 && pls3 == 2)
+    i3 = i3 + (pls3 - 1);
+    testservo3.write(i3 / incr3);
+
   // In loop() we continously check to see if a command has been
   //  received.
   char N = XBee.read();
@@ -93,6 +105,7 @@ void loop(){
       if (XBee.available()){
       testservo1.detach();
       testservo2.detach();
+      testservo3.detach();
         char c = XBee.read();
         if((c == 's') || (c == 'S')){
             writeServoPin();
@@ -105,12 +118,14 @@ void loop(){
 
 void writeServoPin()
 {
-  while (XBee.available() < 2)
+  while (XBee.available() < 3)
     ; // Wait for pin and value to become available
   pls1 = ASCIItoInt(XBee.read());
   pls2 = ASCIItoInt(XBee.read());
+  pls3 = ASCIItoInt(XBee.read());
   testservo1.attach(10, 1000, 2000);
   testservo2.attach(11, 1000, 2000);
+  testservo3.attach(12, 1000, 2000);
 }
 
 void writeDPin()

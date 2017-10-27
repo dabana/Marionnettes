@@ -18,13 +18,14 @@ def show_specific_device(target_vendor_id, target_product_id):
 
 lr0 = '0'
 ud0 = '0'
-lrud0 = '00'
-YBAXstr0 = '0000'
+ab0 = '0'
+lrudab0 = '000'
+YXstr0 = '00'
 RLstr0 = '00'
 SrtSltstr0 = '00'
 
-high_serial_str = ['ddh', 'dch', 'dbh', 'd9h']
-low_serial_str = ['ddl', 'dcl', 'dbl', 'd9l']
+high_serial_str = ['d8h', 'd9h']
+low_serial_str = ['d8l', 'd9l']
 i = 0
 sleeptime = 0.1
 
@@ -43,11 +44,12 @@ def send_direction(var, var0, string):
     return var0
 
 
-def send_buttons(var, var0):
+
+def send_YXbuttons(var, var0):
     global high_serial_str, low_serial_str
 
     print('a button was pressed or released')
-    string = '4'
+    string = str(len(high_serial_str))
     i = 0
     for x in var:
         if x == '1':
@@ -63,23 +65,23 @@ def send_buttons(var, var0):
 
 
 def sample_handler(data):
-    global lrud0, YBAXstr0, RLstr0, SrtSltstr0, stringin, stringout,i
+    global lrudab0, YXstr0, RLstr0, SrtSltstr0
     # t0 = time.time()
-    lrud, YBAXstr, RLstr, SrtSltstr = parse_data(data)
+    lrudab, YXstr, RLstr, SrtSltstr = parse_data(data)
     #deltat = (time.time() - t0)
     #print('Up/down: ' + lr + ', Left/Right: ' + ud + ', YBAX string: ' + YBAXstr + ', RL string: ' + RLstr + ', SrtSlt string:' + SrtSltstr)
     #print('Took %.15f seconds' % deltat)
 
     #Handle directions
-    if lrud != lrud0:
+    if lrudab != lrudab0:
 
-        lrud0 = send_direction(lrud, lrud0, '1s' + lrud)
-        print('going: ' + lrud)
+        lrudab0 = send_direction(lrudab, lrudab0, '1s' + lrudab)
+        print('going: ' + lrudab)
 
 
-    #Handle Y,A,B,X buttons
-    if YBAXstr != YBAXstr0:
-        YBAXstr0 = send_buttons(YBAXstr, YBAXstr0)
+    #Handle Y,X buttons
+    if YXstr != YXstr0:
+        YXstr0 = send_YXbuttons(YXstr, YXstr0)
 
 
 def parse_data(data):
@@ -100,12 +102,22 @@ def parse_data(data):
     else:
         lr = '1'
 
-    lrud = lr + ud
+
     #print('lrud = ' + lrud)
     #extract A, B, X, Y buttons
     # [Y, B, A, X]
     YBAXstr = bin(trimmed_data[2])[2:].zfill(8)
     YBAXstr = YBAXstr[:4]
+    BAstr = YBAXstr[1:3]
+    YXstr = YBAXstr[0] + YBAXstr[3]
+    if BAstr[0:2] == '01':
+        ab = '2' #clock-wise
+    elif BAstr[0:2] == '10':
+        ab = '0' #counter clock-wise
+    else:
+        ab = '1'
+
+    lrudab = lr + ud + ab
 
     #extract L, R buttons
     # [R, L]
@@ -118,7 +130,7 @@ def parse_data(data):
     SrtSltstr = SrtSltstr[2:4]
 
     #print('Up/down: ' + lr + ', Left/Right: ' + ud + ', YBAX string: ' + YBAXstr + ', RL string: ' + RLstr + ', SrtSlt string:' + SrtSltstr)
-    return lrud, YBAXstr, RLstr, SrtSltstr
+    return lrudab, YXstr, RLstr, SrtSltstr
 
 
 def get_data(device):
