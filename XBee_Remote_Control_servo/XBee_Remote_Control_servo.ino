@@ -90,8 +90,8 @@ void loop(){
   // The first digit correspond to the number of commands stringed together
   for(int i = 1; i <= N; i++){
       if (XBee.available()){
-      //testservo1.detach();
-      //testservo2.detach();
+      testservo1.detach();
+      testservo2.detach();
         char c = XBee.read();
         if((c == 's') || (c == 'S')){
             writeServoPin();
@@ -108,8 +108,8 @@ void writeServoPin()
     ; // Wait for pin and value to become available
   pls1 = ASCIItoInt(XBee.read());
   pls2 = ASCIItoInt(XBee.read());
-  //testservo1.attach(10, 1000, 2000);
-  //testservo2.attach(11, 1000, 2000);
+  testservo1.attach(10, 1000, 2000);
+  testservo2.attach(11, 1000, 2000);
 }
 
 void writeDPin()
