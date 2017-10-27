@@ -72,7 +72,7 @@ void setup()
   XBee.begin(9600);
   testservo1.attach(10, 1000, 2000);
   testservo2.attach(11, 1000, 2000);
-  testservo3.attach(12, 1000, 2000);
+  testservo3.attach(9, 1000, 2000);
 }
 
 void loop(){
@@ -93,7 +93,7 @@ void loop(){
   if (i3/incr3 > 0 && pls3 == 0)
     i3 = i3 + (pls3 - 1);
     testservo3.write(i3 / incr3);
-  if (i2/incr3 < 180 && pls3 == 2)
+  if (i3/incr3 < 180 && pls3 == 2)
     i3 = i3 + (pls3 - 1);
     testservo3.write(i3 / incr3);
 
@@ -125,7 +125,7 @@ void writeServoPin()
   pls3 = ASCIItoInt(XBee.read());
   testservo1.attach(10, 1000, 2000);
   testservo2.attach(11, 1000, 2000);
-  testservo3.attach(12, 1000, 2000);
+  testservo3.attach(9, 1000, 2000);
 }
 
 void writeDPin()
