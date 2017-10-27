@@ -53,9 +53,10 @@ Distributed as-is; no warranty is given.
 SoftwareSerial XBee(2, 3); // Arduino RX, TX (XBee Dout, Din)
 Servo testservo1;
 Servo testservo2;
-int incr = 20;
-int i1 = 90 * incr;
-int i2 = 90 * incr;
+int incr1 = 20;
+int incr2 = 5;
+int i1 = 90 * incr1;
+int i2 = 90 * incr2;
 bool hl;
 int pls1 = 1;
 int pls2 = 1;
@@ -70,19 +71,19 @@ void setup()
 }
 
 void loop(){
-  if (i1/incr > 0 && pls1 == 0)
+  if (i1/incr1 > 0 && pls1 == 0)
     i1 = i1 + (pls1 - 1);
-    testservo1.write(i1 / incr);
-  if (i1/incr < 180 && pls1 == 2)
+    testservo1.write(i1 / incr1);
+  if (i1/incr1 < 180 && pls1 == 2)
     i1 = i1 + (pls1 - 1);
-    testservo1.write(i1 / incr);
+    testservo1.write(i1 / incr1);
 
-  if (i2/incr > 0 && pls2 == 0)
+  if (i2/incr2 > 0 && pls2 == 0)
     i2 = i2 + (pls2 - 1);
-    testservo2.write(i2 / incr);
-  if (i2/incr < 180 && pls2 == 2)
+    testservo2.write(i2 / incr2);
+  if (i2/incr2 < 180 && pls2 == 2)
     i2 = i2 + (pls2 - 1);
-    testservo2.write(i2 / incr);
+    testservo2.write(i2 / incr2);
 
   // In loop() we continously check to see if a command has been
   //  received.
